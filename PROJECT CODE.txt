@@ -1,0 +1,140 @@
+GPS LOCATION
+
+#include "thingProperties.h"
+#include <Arduino_MKRGPS.h>
+#include <Ultrasonic.h>
+#include <Servo.h> // Include the Servo library
+
+#define SERVO_PIN 9 // Example pin for servo motor control
+
+Servo myServo; // Create a servo object
+
+//Echo - 12, trigger - 13//
+Ultrasonic ultrasonic(12, 13);
+
+void setup() {
+  // Initialize serial and wait for port to open:
+  Serial.begin(9600);
+  // This delay gives the chance to wait for a Serial Monitor without blocking if none is found
+
+  // Defined in thingProperties.h
+  initProperties();
+
+  // Connect to Arduino IoT Cloud
+  ArduinoCloud.begin(ArduinoIoTPreferredConnection);
+
+  /*
+     The following function allows you to obtain more information
+     related to the state of network and IoT Cloud connection and errors
+     the higher number the more granular information you’ll get.
+     The default is 0 (only errors).
+     Maximum is 4
+  */
+  setDebugMessageLevel(2);
+  ArduinoCloud.printDebugInfo();
+  if (!GPS.begin()) {
+    Serial.println("Failed to initialize GPS!");
+    while (1);
+  }
+
+  myServo.attach(SERVO_PIN); // Attach the servo to the pin
+}
+
+void loop() {
+  ArduinoCloud.update();
+  // Your code here
+  if (GPS.available()) {
+    // read GPS values
+    float latitude = GPS.latitude();
+    float longitude = GPS.longitude();
+
+    // print GPS values
+    Serial.print("Location: ");
+    Serial.print(latitude, 7);
+    Serial.print(", ");
+    Serial.println(longitude, 7);
+    location = {latitude, longitude};
+    Serial.println();
+  }
+  level = ultrasonic.read();
+
+  // Check if something is within 60cm
+  if (level < 60) {
+    // Move the servo to 90 degrees
+    myServo.write(90);
+    delay(1000); // Add a delay to allow the servo to move (adjust as needed)
+  } else {
+    // Keep the servo at 0 degrees
+    myServo.write(0);
+  }
+}
+
+/*
+  Since Location is READ_WRITE variable, onLocationChange() is
+  executed every time a new value is received from IoT Cloud.
+*/
+void onLocationChange() {
+  // Add your code here to act upon Location change
+}
+
+/*
+  Since Level is READ_WRITE variable, onLevelChange() is
+  executed every time a new value is received from IoT Cloud.
+*/
+void onLevelChange() {
+  // Add your code here to act upon Level change
+}
+
+/*
+  Since Servo is READ_WRITE variable, onServoChange() is
+  executed every time a new value is received from IoT Cloud.
+*/
+void onServoChange()  {
+  // Add your code here to act upon Servo change
+}
+
+
+
+open and close dustbin
+
+
+#include <Servo.h>
+
+static const int servoPin = 11;
+int t = 9;
+int e =10;
+int pos = 0;
+
+Servo servo1;
+
+void setup() {
+  Serial.begin(9600);
+  servo1.attach(servoPin);
+  pinMode(t, OUTPUT);
+  pinMode(e, INPUT);
+}
+
+void loop() {
+  servo1.write(pos);
+  digitalWrite(t,LOW);
+  delayMicroseconds(2);
+  digitalWrite(t, HIGH);
+  delayMicroseconds(5);
+  digitalWrite(t,LOW);
+  delayMicroseconds(10);
+  int du = pulseIn(e, HIGH);
+  int d = du*0.17/2;
+  Serial.println(d);
+  if (d < 50 ){
+  for (pos = 0; pos <= 180; pos += 1) { // goes from 0 degrees to 180 degrees
+    // in steps of 1 degree
+    servo1.write(pos);              // tell servo to go to position in variable 'pos'
+    delay(15);
+    servo1.write(90);// waits 15ms for the servo to reach the position
+  }
+  }
+  else{
+   servo1.write(90);
+  }
+  delay(1000);
+}
