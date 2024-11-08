@@ -43,8 +43,8 @@ The system architecture includes the integration of ESP32, ultrasonic sensors, s
 ### Installation
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/thejasaai-hub/Smart-Dustbin-with-IoT-and-LoRaWAN
-.git
+   git clone https://github.com/thejasaai-hub/Smart-Dustbin-with-IoT-and-LoRaWAN.git
+
 
 2. **Upload Code**:
 
