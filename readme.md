@@ -20,11 +20,6 @@ The **Smart Dustbin** project aims to improve waste management through real-time
 
 ## System Architecture
 
-### Block Diagram
-The system architecture includes the integration of ESP32, ultrasonic sensors, servo motor, GPS module, and Arduino IoT Cloud, as illustrated below:
-
-![Block Diagram](BLOCKDIAGRAM.png)
-
 ### Project Workflow
 1. **Sensor Detection**: The ultrasonic sensor detects the fill level inside the dustbin.
 2. **Lid Operation**: The servo motor automatically opens/closes the lid based on proximity.
